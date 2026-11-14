@@ -1,0 +1,398 @@
+import assert from "node:assert/strict";
+import { readFileSync, readdirSync } from "node:fs";
+import test from "node:test";
+import Matter from "matter-js";
+
+import { initFixedNav } from "../src/scripts/fixed-nav.js";
+import { initHeadingReveal } from "../src/scripts/heading-reveal.js";
+import { initLogoReveal } from "../src/scripts/logo-reveal.js";
+import { enhanceTextCards } from "../src/scripts/cards/enhancement.js";
+import { mountTextCards } from "../src/scripts/cards/physics.js";
+import { preferencesChangeEvent } from "../src/scripts/preferences.js";
+import { createNav } from "./helpers/nav.mjs";
+import { ElementStub, eventWith, installDOM } from "./helpers/dom.mjs";
+
+const html = readFileSync(
+  new URL("../dist/index.html", import.meta.url),
+  "utf8",
+);
+const cssDirectory = new URL("../dist/_astro/", import.meta.url);
+const css = readdirSync(cssDirectory)
+  .filter((name) => name.endsWith(".css"))
+  .map((name) => readFileSync(new URL(name, cssDirectory), "utf8"))
+  .join("\n");
+
+test("JSなしの生成HTMLに全本文と成果物リンク、ネイティブ目次がある", () => {
+  const contents = html.match(
+    /<div\b[^>]*data-contents-item[^>]*>([\s\S]*?)<\/div>/,
+  );
+  assert.ok(contents);
+  assert.equal([...contents[1].matchAll(/href="#section0[1-4]"/g)].length, 4);
+  assert.equal([...html.matchAll(/<article\b/g)].length, 6);
+  for (const match of html.matchAll(
+    /<(?:section|h[1-3]|article|a)\b([^>]*)>/g,
+  )) {
+    assert.doesNotMatch(match[1], /\b(?:hidden|inert|aria-hidden="true")\b/);
+  }
+  assert.match(html, /はじめまして。タカハシタカユキと申します。/);
+  for (const href of [
+    "https://thinking-in-the-grey.pages.dev/",
+    "https://reservation-01.vercel.app/",
+    "https://scroll-wars.vercel.app/",
+    "https://spotify-ui-six.vercel.app/",
+    "https://p5-learning-tau.vercel.app/",
+    "https://scroll-image-distortion.vercel.app/",
+  ]) {
+    assert.ok(html.includes(`href="${href}"`));
+  }
+  const settings = [
+    ...html.matchAll(/<button\b[^>]*data-(?:animation|theme)-toggle[^>]*>/g),
+  ];
+  assert.equal(settings.length, 2);
+  for (const [button] of settings) assert.match(button, /\bdisabled\b/);
+});
+
+test("headの設定復元だけ成功しても見出しを隠すCSSがない", () => {
+  assert.doesNotMatch(css, /html\.js/);
+  for (const [, selector, declarations] of css.matchAll(
+    /([^{}]+)\{([^{}]*)\}/g,
+  )) {
+    if (
+      /(?:heading-reveal|logo-random-reveal)/.test(selector) &&
+      !/::?after/.test(selector)
+    ) {
+      assert.doesNotMatch(
+        declarations,
+        /(?:opacity:0|clip-path:inset\(0 100%)/,
+      );
+    }
+  }
+  assert.doesNotMatch(html, /data-active="true"/);
+});
+
+function assertNavFallback(fixture) {
+  assert.equal(fixture.nav.dataset.enhanced, undefined);
+  assert.equal(fixture.menuButton.hidden, false);
+  assert.equal(fixture.menuButton.hasAttribute("aria-expanded"), false);
+  assert.equal(fixture.popover.getAttribute("popover"), "auto");
+}
+
+test("目次の初期化に必要な要素が不足してもネイティブ目次を残す", (t) => {
+  const dom = installDOM(t),
+    nav = createNav(dom);
+  nav.lines.pop();
+  initFixedNav(nav.nav);
+  assertNavFallback(nav);
+});
+
+test("イベント登録が途中で失敗したら登録を解除してネイティブ目次へ戻る", (t) => {
+  const dom = installDOM(t),
+    nav = createNav(dom);
+  nav.menuButton.addEventListener = () => {
+    throw new Error("listener failed");
+  };
+  initFixedNav(nav.nav);
+  assertNavFallback(nav);
+});
+
+test("初期化成功時だけ拡張し、実行中の例外でもネイティブ目次を復元する", (t) => {
+  const dom = installDOM(t),
+    nav = createNav(dom);
+  const dispose = initFixedNav(nav.nav);
+  assert.equal(nav.nav.dataset.enhanced, "true");
+  assert.equal(nav.links[0].getAttribute("aria-current"), "location");
+  // Simulate a missing popover API during an interaction.
+  nav.menuButton.dispatchEvent(eventWith("click", { detail: 0 }));
+  assertNavFallback(nav);
+  dispose();
+});
+
+function revealDOM(t, { reduced = false, failObserve = false } = {}) {
+  let observer;
+  const media = new EventTarget();
+  media.matches = reduced;
+  const dom = installDOM(
+    t,
+    {},
+    {
+      matchMedia: () => media,
+      IntersectionObserver: class {
+        constructor(callback) {
+          this.callback = callback;
+          observer = this;
+        }
+        observe() {
+          if (failObserve) throw new Error("observer failed");
+        }
+        unobserve() {}
+        disconnect() {
+          this.disconnected = true;
+        }
+      },
+    },
+  );
+  const heading = new ElementStub(),
+    logo = new ElementStub();
+  const animations = [];
+  const animate = (_, options) => {
+    const animation = {
+      options,
+      finished: new Promise(() => {}),
+      cancel() {
+        this.cancelled = true;
+      },
+    };
+    animations.push(animation);
+    return animation;
+  };
+  heading.animate = animate;
+  logo.animate = animate;
+  const characters = [new ElementStub(), new ElementStub()];
+  for (const character of characters) character.animate = animate;
+  logo.querySelectorAll = () => characters;
+  dom.document.querySelectorAll = (selector) =>
+    selector.includes("logo") ? [logo] : [heading];
+  return {
+    ...dom,
+    media,
+    heading,
+    logo,
+    characters,
+    animations,
+    observer: () => observer,
+  };
+}
+
+test("演出用APIがない環境では見出しを変更しない", (t) => {
+  const dom = revealDOM(t);
+  dom.root.dataset.animation = "on";
+  delete dom.heading.animate;
+  const dispose = initHeadingReveal();
+  assert.equal(dom.observer(), undefined);
+  assert.equal(dom.heading.style.getPropertyValue("opacity"), "");
+  assert.equal(dom.heading.dataset.revealed, "true");
+  dispose();
+});
+
+test("Observerの初期化が失敗しても見出しを隠さない", (t) => {
+  const dom = revealDOM(t, { failObserve: true });
+  dom.root.dataset.animation = "on";
+  const dispose = initHeadingReveal();
+  assert.equal(dom.observer().disconnected, true);
+  assert.equal(dom.animations.length, 0);
+  assert.equal(dom.heading.style.getPropertyValue("clip-path"), "");
+  assert.equal(dom.heading.dataset.revealed, "true");
+  dispose();
+});
+
+test("見出しの演出は有限時間で、Offへの切替時はキャンセルする", (t) => {
+  const dom = revealDOM(t);
+  dom.root.dataset.animation = "on";
+  const dispose = initHeadingReveal();
+  dom.observer().callback([{ target: dom.heading, isIntersecting: true }]);
+  assert.equal(dom.animations[0].options.duration, 250);
+  assert.equal(dom.animations[0].options.fill, undefined);
+  assert.equal(dom.animations[0].options.pseudoElement, "::after");
+  assert.equal(dom.heading.dataset.revealed, "true");
+  dom.root.dataset.animation = "off";
+  dom.document.dispatchEvent(new Event(preferencesChangeEvent));
+  assert.equal(dom.animations[0].cancelled, true);
+  dispose();
+});
+
+test("ロゴの演出が途中で失敗しても開始済みのアニメーションを解除する", (t) => {
+  const dom = revealDOM(t);
+  dom.root.dataset.animation = "on";
+  for (const character of dom.characters) {
+    const original = character.animate;
+    character.animate = (...args) => {
+      if (dom.animations.length) throw new Error("animation failed");
+      return original(...args);
+    };
+  }
+  const dispose = initLogoReveal();
+  dom.observer().callback([{ target: dom.logo, isIntersecting: true }]);
+  assert.equal(dom.animations.length, 1);
+  assert.equal(dom.animations[0].cancelled, true);
+  assert.equal(dom.animations[0].options.pseudoElement, "::after");
+  assert.equal(dom.logo.dataset.revealed, "true");
+  dispose();
+});
+
+test("OSが動きを減らす設定の場合は演出を開始しない", (t) => {
+  const dom = revealDOM(t, { reduced: true });
+  dom.root.dataset.animation = "on";
+  const dispose = initHeadingReveal();
+  assert.equal(dom.observer(), undefined);
+  assert.equal(dom.animations.length, 0);
+  dispose();
+});
+
+function cardsDOM(t, { failResize = false } = {}) {
+  const frames = new Map(),
+    observers = [];
+  let frameId = 0;
+  const media = new EventTarget();
+  media.matches = false;
+  class Observer {
+    constructor(callback) {
+      this.callback = callback;
+      observers.push(this);
+    }
+    observe() {}
+    disconnect() {
+      this.disconnected = true;
+    }
+  }
+  const dom = installDOM(
+    t,
+    {},
+    {
+      matchMedia: () => media,
+      IntersectionObserver: Observer,
+      MutationObserver: Observer,
+      ResizeObserver: failResize
+        ? class {
+            constructor() {
+              throw new Error("resize unavailable");
+            }
+          }
+        : Observer,
+      requestAnimationFrame: (callback) => {
+        frames.set(++frameId, callback);
+        return frameId;
+      },
+      cancelAnimationFrame: (id) => frames.delete(id),
+    },
+  );
+  dom.root.dataset.animation = "on";
+  const root = new ElementStub(),
+    card = new ElementStub(),
+    stage = new ElementStub(),
+    skin = new ElementStub(),
+    controls = new ElementStub();
+  Object.assign(root.dataset, {
+    animate: "true",
+    controls: "false",
+    soft: "false",
+    distance: "0.85",
+    interval: "140",
+  });
+  root.querySelectorAll = () => [card];
+  root.querySelector = (selector) =>
+    selector === "[data-stage]"
+      ? stage
+      : selector === "[data-skin]"
+        ? skin
+        : controls;
+  stage.getBoundingClientRect = () => ({
+    left: 0,
+    top: 0,
+    width: 600,
+    height: 400,
+  });
+  card.getBoundingClientRect = () => ({
+    left: 0,
+    top: 0,
+    width: 300,
+    height: 200,
+  });
+  const runFrame = (time) => {
+    const [id, callback] = frames.entries().next().value;
+    frames.delete(id);
+    callback(time);
+  };
+  return { ...dom, root, card, stage, controls, frames, observers, runFrame };
+}
+
+function assertStaticCards(dom) {
+  assert.equal(dom.root.dataset.active, "false");
+  assert.equal(dom.root.dataset.state, "static");
+  for (const property of ["opacity", "transform", "z-index", "will-change"])
+    assert.equal(dom.card.style.getPropertyValue(property), "");
+  assert.equal(dom.controls.hidden, true);
+}
+
+test("物理演算モジュールの読み込み失敗は静的表示に戻る", async (t) => {
+  const dom = cardsDOM(t);
+  dom.root.dataset.state = "pending";
+  enhanceTextCards(dom.root, async () => {
+    throw new Error("chunk failed");
+  });
+  await new Promise(setImmediate);
+  assertStaticCards(dom);
+});
+
+test("物理演算の読み込み中は初期表示の非表示状態を維持する", async (t) => {
+  const dom = cardsDOM(t);
+  dom.root.dataset.state = "pending";
+  let resolve;
+  const loading = new Promise((done) => (resolve = done));
+  const dispose = enhanceTextCards(dom.root, () => loading);
+  assert.equal(dom.root.dataset.state, "loading");
+  await new Promise(setImmediate);
+  assert.equal(dom.root.dataset.state, "loading");
+  resolve({ mountTextCards });
+  await new Promise(setImmediate);
+  assert.equal(dom.root.dataset.state, "waiting");
+  assert.equal(dom.card.style.opacity, "0");
+  dispose();
+  assertStaticCards(dom);
+});
+
+test("物理演算の初期化がDOM変更後に失敗しても見える状態へ戻る", async (t) => {
+  const dom = cardsDOM(t);
+  enhanceTextCards(dom.root, async () => ({
+    mountTextCards(root) {
+      root.dataset.active = "true";
+      dom.card.style.opacity = "0";
+      throw new Error("mount failed");
+    },
+  }));
+  await new Promise(setImmediate);
+  assertStaticCards(dom);
+});
+
+test("切断中に読み込みが完了しても演出を開始しない", async (t) => {
+  const dom = cardsDOM(t);
+  let resolve;
+  const loading = new Promise((done) => {
+    resolve = done;
+  });
+  let mounted = false;
+  const dispose = enhanceTextCards(dom.root, () => loading);
+  dispose();
+  resolve({
+    mountTextCards() {
+      mounted = true;
+      return () => {};
+    },
+  });
+  await new Promise(setImmediate);
+  assert.equal(mounted, false);
+  assertStaticCards(dom);
+});
+
+test("Observer登録の途中で失敗してもリソースを解除し静的表示を維持する", (t) => {
+  const dom = cardsDOM(t, { failResize: true });
+  mountTextCards(dom.root);
+  assertStaticCards(dom);
+  assert.ok(dom.observers.every((observer) => observer.disconnected));
+});
+
+test("フレーム処理が失敗したら非表示・変形を解除し、演算を停止する", (t) => {
+  const dom = cardsDOM(t);
+  const dispose = mountTextCards(dom.root);
+  assert.equal(dom.card.style.getPropertyValue("opacity"), "0");
+  dom.observers[1].callback([{ isIntersecting: true }]);
+  dom.runFrame(1);
+  assert.equal(dom.card.style.getPropertyValue("opacity"), "0");
+  t.mock.method(Matter.Engine, "update", () => {
+    throw new Error("engine failed");
+  });
+  dom.runFrame(100);
+  assertStaticCards(dom);
+  assert.equal(dom.frames.size, 0);
+  assert.ok(dom.observers.every((observer) => observer.disconnected));
+  dispose();
+});
