@@ -23,7 +23,8 @@ export function initReveal(selector, animate) {
   };
   const setup = () => {
     const next =
-      document.documentElement.dataset.animation === "on" && !reduced?.matches;
+      document.documentElement.dataset.animation === "on" && !reduced?.matches &&
+      document.documentElement.dataset.fonts !== "loading";
     if (next === enabled) return;
     enabled = next;
     stop();
@@ -59,6 +60,7 @@ export function initReveal(selector, animate) {
   const dispose = () => {
     pause();
     document.removeEventListener(preferencesChangeEvent, setup);
+    document.removeEventListener("portfolio:fonts-settled", setup);
     reduced?.removeEventListener?.("change", setup);
     window.removeEventListener("pagehide", pause);
     window.removeEventListener("pageshow", setup);
@@ -73,6 +75,7 @@ export function initReveal(selector, animate) {
     }
     reduced = matchMedia("(prefers-reduced-motion: reduce)");
     document.addEventListener(preferencesChangeEvent, setup);
+    document.addEventListener("portfolio:fonts-settled", setup);
     reduced.addEventListener("change", setup);
     window.addEventListener("pagehide", pause);
     window.addEventListener("pageshow", setup);

@@ -1,5 +1,9 @@
 ---
 import "../styles/global.css";
+import fontFaces from "../styles/fonts.css?raw";
+import fontState from "../styles/font-state.css?raw";
+import fontBootstrap from "../scripts/font-bootstrap.js?raw";
+import { faces } from "../config/fonts.json";
 ---
 
 <!doctype html>
@@ -51,31 +55,13 @@ import "../styles/global.css";
         }
       })();
     </script>
+    <style is:inline set:html={fontFaces + fontState} />
+    {faces.filter((face) => face.preload).map((face) => (
+      <link rel="preload" href={face.url} as="font" type="font/woff2" crossorigin="anonymous" />
+    ))}
+    <script is:inline set:html={fontBootstrap} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/gen-interface-jp@latest/cdn/300.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/gen-interface-jp@latest/cdn/400.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/gen-interface-jp@latest/cdn/500.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/gen-interface-jp@latest/cdn/700.css"
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@300;400;500;700;900&display=swap"
-      rel="stylesheet"
-    />
     <title>タカハシタカユキのポートフォリオ</title>
     <meta
       name="description"

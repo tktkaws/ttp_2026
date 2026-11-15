@@ -7,7 +7,8 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "npm run fonts:check && astro build",
+    "fonts:check": "node scripts/check-font-coverage.mjs",
     "preview": "astro preview",
     "test:regression": "npm run build && node --test tests/*.test.mjs",
     "test:browser": "npm run build && playwright test"

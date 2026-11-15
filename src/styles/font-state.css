@@ -1,0 +1,31 @@
+/* Default to readable system fonts when JS is unavailable or loading fails. */
+:root {
+  --font-gen-interface-jp: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic", "YuGothic", sans-serif;
+  --font-zen-kaku: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic", "YuGothic", sans-serif;
+}
+
+:root[data-fonts="ready"] {
+  --font-gen-interface-jp: "Gen Interface JP", "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic", "YuGothic", sans-serif;
+  --font-zen-kaku: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic", "YuGothic", sans-serif;
+}
+
+/* Keep layout, images and controls in place; only withhold text ink briefly. */
+html[data-fonts="loading"] body,
+html[data-fonts="loading"] body *,
+html[data-fonts="loading"] body *::before,
+html[data-fonts="loading"] body *::after {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: none !important;
+}
+
+@media (forced-colors: active) {
+  html[data-fonts="loading"] body,
+  html[data-fonts="loading"] body *,
+  html[data-fonts="loading"] body *::before,
+  html[data-fonts="loading"] body *::after {
+    /* Do not suppress the user's forced-color choices. */
+    color: CanvasText !important;
+    -webkit-text-fill-color: currentColor !important;
+  }
+}
