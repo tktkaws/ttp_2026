@@ -43,6 +43,10 @@ for (const width of [375, 1280]) {
     await expect(page.locator("html")).toHaveAttribute("data-fonts", "ready");
     expect((await actualFonts(page, "[data-logo-char]")).some((font) => font.familyName === "Zen Kaku Gothic New" && font.isCustomFont)).toBe(true);
     expect((await actualFonts(page, "#section01 h2")).some((font) => font.familyName === "Gen Interface JP" && font.isCustomFont)).toBe(true);
+    const holidayTitle = 'article:has(a[href="https://cao-holidays-json.pages.dev/"]) .card-title';
+    expect(await actualFonts(page, holidayTitle)).toEqual([
+      expect.objectContaining({ postScriptName: "GenInterfaceJP-Medium", isCustomFont: true }),
+    ]);
     expect(requests).toHaveLength(5);
     expect(new Set(requests).size).toBe(5);
     expect(await page.locator('link[href*="fonts.googleapis"], link[href*="jsdelivr"]').count()).toBe(0);
