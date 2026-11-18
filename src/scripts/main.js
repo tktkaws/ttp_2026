@@ -12,3 +12,4 @@ initPageAnchors();
 initFixedNav();
 initLogoReveal();
 initHeadingReveal();
+document.documentElement.dataset.revealScript = "ready";

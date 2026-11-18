@@ -55,7 +55,7 @@ for (const theme of ["light", "dark"]) {
     await animation.focus();
     await visibleFocus(page, animation);
     await page.keyboard.press("Space");
-    await expect(page.locator("html")).toHaveAttribute("data-animation", "on");
+    await expect(page.locator("html")).toHaveAttribute("data-animation", "off");
     await page.keyboard.press("Tab");
     await visibleFocus(page, themeToggle);
     await page.keyboard.press("Enter");
@@ -159,7 +159,7 @@ test("支援技術向け情報: 見出し・ランドマーク・一覧・名称
     page.getByRole("group", { name: "表示設定", exact: true }),
   ).toBeVisible();
   await expect(page.locator("[data-animation-toggle]")).toMatchAriaSnapshot(
-    '- button "モーション：オフ"',
+    '- button "モーション：オン" [pressed]',
   );
   const themeToggle = page.locator("[data-theme-toggle]");
   await expect(themeToggle).toMatchAriaSnapshot('- button "テーマ：ライト"');

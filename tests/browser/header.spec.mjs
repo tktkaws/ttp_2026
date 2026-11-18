@@ -83,6 +83,11 @@ for (const width of [320, 1280]) {
         });
         const page = await context.newPage();
         await page.goto("/");
+        await expect(page.locator("html")).toHaveAttribute("data-animation", "on");
+        const heading = page.locator("[data-heading-reveal]").first();
+        expect(await heading.evaluate((element) =>
+          getComputedStyle(element, "::after").content,
+        )).toBe("none");
         await page
           .getByRole("button", { name: "コンテンツメニュー", exact: true })
           .click();

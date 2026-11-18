@@ -2,8 +2,10 @@
 import "../styles/global.css";
 import fontState from "../styles/font-state.css?raw";
 import fontBootstrap from "../scripts/font-bootstrap.js?raw";
+import { defaultPreferences, preferenceKeys } from "../config/preferences.js";
 import { genFaces } from "virtual:gen-fonts";
 
+const animationOnByDefault = defaultPreferences.animation === "on";
 const faces = [
   ...genFaces,
   { family: "Zen Kaku Gothic New", weight: 400, url: "/fonts/zen-400-afc9ed33e392.woff2", preload: true },
@@ -19,7 +21,7 @@ const fontFaces = faces.map(({ family, weight, url }) => `
 ---
 
 <!doctype html>
-<html lang="ja" data-theme="light" data-animation="off">
+<html lang="ja" data-theme="light" data-animation={defaultPreferences.animation}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
@@ -36,11 +38,8 @@ const fontFaces = faces.map(({ family, weight, url }) => `
       }
     </style>
     <!-- Run before external stylesheets, without waiting for a module download. -->
-    <script is:inline>
+    <script is:inline define:vars={{ defaultPreferences, preferenceKeys }}>
       (function () {
-        const defaultPreferences = { theme: "light", animation: "off" };
-        const preferenceKeys = { theme: "theme", animation: "animation" };
-
         {
           let theme = defaultPreferences.theme;
           let animation = defaultPreferences.animation;
@@ -66,6 +65,15 @@ const fontFaces = faces.map(({ family, weight, url }) => `
             ?.setAttribute("content", theme);
         }
       })();
+    </script>
+    <script is:inline>
+      {
+        const root = document.documentElement;
+        root.dataset.revealScript = "pending";
+        document.addEventListener("DOMContentLoaded", () => {
+          if (root.dataset.revealScript === "pending") delete root.dataset.revealScript;
+        }, { once: true });
+      }
     </script>
     <style is:inline set:html={fontFaces + fontState} />
     {faces.filter((face) => face.preload).map((face) => (
@@ -100,11 +108,11 @@ const fontFaces = faces.map(({ family, weight, url }) => `
           type="button"
           class="min-h-[44px] py-2 px-[0.2em] whitespace-nowrap underline underline-offset-[0.2em] cursor-pointer"
           data-animation-toggle
-          aria-pressed="false"
-          title="アニメーションを動かす"
+          aria-pressed={String(animationOnByDefault)}
+          title={animationOnByDefault ? "アニメーションを止める" : "アニメーションを動かす"}
           disabled
         >
-          モーション：オフ
+          モーション：{animationOnByDefault ? "オン" : "オフ"}
         </button>
         <button
           type="button"
