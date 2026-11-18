@@ -1,13 +1,27 @@
 ---
 import "../styles/global.css";
-import fontFaces from "../styles/fonts.css?raw";
 import fontState from "../styles/font-state.css?raw";
 import fontBootstrap from "../scripts/font-bootstrap.js?raw";
-import { faces } from "../config/fonts.json";
+import { defaultPreferences, preferenceKeys } from "../config/preferences.js";
+import { genFaces } from "virtual:gen-fonts";
+
+const animationOnByDefault = defaultPreferences.animation === "on";
+const faces = [
+  ...genFaces,
+  { family: "Zen Kaku Gothic New", weight: 400, url: "/fonts/zen-400-afc9ed33e392.woff2", preload: true },
+];
+const fontFaces = faces.map(({ family, weight, url }) => `
+@font-face {
+  font-family: "${family}";
+  font-style: normal;
+  font-weight: ${weight};
+  font-display: block;
+  src: url("${url}") format("woff2");
+}`).join("\n");
 ---
 
 <!doctype html>
-<html lang="ja" data-theme="light" data-animation="off">
+<html lang="ja" data-theme="light" data-animation={defaultPreferences.animation}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
@@ -24,11 +38,8 @@ import { faces } from "../config/fonts.json";
       }
     </style>
     <!-- Run before external stylesheets, without waiting for a module download. -->
-    <script is:inline>
+    <script is:inline define:vars={{ defaultPreferences, preferenceKeys }}>
       (function () {
-        const defaultPreferences = { theme: "light", animation: "off" };
-        const preferenceKeys = { theme: "theme", animation: "animation" };
-
         {
           let theme = defaultPreferences.theme;
           let animation = defaultPreferences.animation;
@@ -54,6 +65,15 @@ import { faces } from "../config/fonts.json";
             ?.setAttribute("content", theme);
         }
       })();
+    </script>
+    <script is:inline>
+      {
+        const root = document.documentElement;
+        root.dataset.revealScript = "pending";
+        document.addEventListener("DOMContentLoaded", () => {
+          if (root.dataset.revealScript === "pending") delete root.dataset.revealScript;
+        }, { once: true });
+      }
     </script>
     <style is:inline set:html={fontFaces + fontState} />
     {faces.filter((face) => face.preload).map((face) => (
@@ -88,11 +108,11 @@ import { faces } from "../config/fonts.json";
           type="button"
           class="min-h-[44px] py-2 px-[0.2em] whitespace-nowrap underline underline-offset-[0.2em] cursor-pointer"
           data-animation-toggle
-          aria-pressed="false"
-          title="アニメーションを動かす"
+          aria-pressed={String(animationOnByDefault)}
+          title={animationOnByDefault ? "アニメーションを止める" : "アニメーションを動かす"}
           disabled
         >
-          モーション：オフ
+          モーション：{animationOnByDefault ? "オン" : "オフ"}
         </button>
         <button
           type="button"
@@ -274,11 +294,14 @@ import { faces } from "../config/fonts.json";
             <li>
               <h3 class="text-body font-medium">Accessibility</h3>
               <p class="mt-4">
-                JIS X
-                8341-3:2016への適合を目指す既存サイトの改修を担当しました。日々の案件でも、可能な限りWCAG
-                2.2に沿った実装を心がけています。また、DHS Trusted
-                Tester認定を取得し、WCAG
-                2.0に基づいたWebアクセシビリティ試験を実施できます。
+                <a
+                  class="text-inherit underline underline-offset-[0.15em] hover:decoration-2"
+                  href="https://thinking-in-the-grey.pages.dev/blog/ch91jpvx2/"
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="DHS Trusted Tester認定を取得し（別ウィンドウで開きます）"
+                >DHS Trusted Tester認定を取得し</a>、WCAG2.0に基づいたWebアクセシビリティ試験を実施できます。
+                日々の案件でも、WCAG2.2 AAに適合することを意識した実装を心がけています。
               </p>
             </li>
             <li>
@@ -447,7 +470,7 @@ import { faces } from "../config/fonts.json";
                       </a>
                     </p>
                     <p class="description mt-[14px] font-sans text-[length:var(--details-font-size)] font-light leading-[1.8] [overflow-wrap:anywhere] text-pretty">
-                      microCMS、Astroを使用しブログを作成しました。Swupによる擬似的な非同期遷移も実装しました。
+                      microCMS、Astroを使用しブログを作成しました。
                     </p>
                     <p class="link details-link relative z-2 mt-[14px] font-sans text-[length:var(--details-font-size)] font-light leading-[1.8] [overflow-wrap:anywhere] text-pretty">
                       <a
@@ -534,7 +557,7 @@ import { faces } from "../config/fonts.json";
                     <p class="link details-link relative z-2 mt-[14px] font-sans text-[length:var(--details-font-size)] font-light leading-[1.8] [overflow-wrap:anywhere] text-pretty">
                       <a
                         class="text-inherit underline underline-offset-[0.15em] hover:decoration-2"
-                        href="https://example.com/"
+                        href="https://thinking-in-the-grey.pages.dev/blog/rg3q2gwi4w/"
                         target="_blank"
                         rel="noreferrer"
                         aria-label="会議室予約システムの詳しい説明を見る（別ウィンドウで開きます）"
@@ -616,7 +639,7 @@ import { faces } from "../config/fonts.json";
                     <p class="link details-link relative z-2 mt-[14px] font-sans text-[length:var(--details-font-size)] font-light leading-[1.8] [overflow-wrap:anywhere] text-pretty">
                       <a
                         class="text-inherit underline underline-offset-[0.15em] hover:decoration-2"
-                        href="https://example.com/"
+                        href="https://thinking-in-the-grey.pages.dev/blog/vnbejedunmy/"
                         target="_blank"
                         rel="noreferrer"
                         aria-label="SCROLL WARSの詳しい説明を見る（別ウィンドウで開きます）"
@@ -654,25 +677,25 @@ import { faces } from "../config/fonts.json";
                     >
                       <img
                         class="absolute inset-[4%] w-[92%] h-[92%] max-w-none object-cover object-top pointer-events-none"
-                        src="/spotify_ui.png"
+                        src="/cao-holidays-json.png"
                         alt=""
-                        width="1920"
-                        height="992"
+                        width="2081"
+                        height="942"
                         decoding="async"
                       />
                     </div>
                     <h3 class="card-title details-title mt-[14px] max-w-full font-sans text-body font-medium leading-[1.8] tracking-normal text-left [overflow-wrap:anywhere]">
-                      Spotify UI
+                      内閣府「国民の祝日」API
                     </h3>
                     <p class="link mt-1 font-sans text-[length:var(--details-font-size)] font-light leading-[1.8] [overflow-wrap:anywhere] text-pretty">
                       <a
                         class="text-inherit underline underline-offset-[0.15em] hover:decoration-2"
-                        href="https://spotify-ui-six.vercel.app/"
+                        href="https://cao-holidays-json.pages.dev/"
                         target="_blank"
                         rel="noreferrer"
-                        aria-label="https://spotify-ui-six.vercel.app/（別ウィンドウで開きます）"
+                        aria-label="https://cao-holidays-json.pages.dev/（別ウィンドウで開きます）"
                       >
-                        https://spotify-ui-six.vercel.app/
+                        https://cao-holidays-json.pages.dev/
                         <svg
                           class="external-link-icon inline-block w-[0.85em] h-[0.85em] ms-[0.3em] align-[-0.05em]"
                           xmlns="http://www.w3.org/2000/svg"
@@ -693,12 +716,12 @@ import { faces } from "../config/fonts.json";
                       </a>
                     </p>
                     <p class="description mt-[14px] font-sans text-[length:var(--details-font-size)] font-light leading-[1.8] [overflow-wrap:anywhere] text-pretty">
-                      Spotifyで印象的な、カバー画像が縮小して背景色が浮き上がってくるUIを再現してみました。
+                      内閣府が公開している祝日・休日のCSVを使って、JSONを取得できるサイトを作成しました。
                     </p>
                     <p class="link details-link relative z-2 mt-[14px] font-sans text-[length:var(--details-font-size)] font-light leading-[1.8] [overflow-wrap:anywhere] text-pretty">
                       <a
                         class="text-inherit underline underline-offset-[0.15em] hover:decoration-2"
-                        href="https://example.com/"
+                        href="https://thinking-in-the-grey.pages.dev/blog/7mdgg1cd1kyl/"
                         target="_blank"
                         rel="noreferrer"
                         aria-label="Spotify UIの詳しい説明を見る（別ウィンドウで開きます）"

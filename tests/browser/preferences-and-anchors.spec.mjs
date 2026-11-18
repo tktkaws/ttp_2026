@@ -176,22 +176,22 @@ test("UIで変更したテーマと動きの設定を再読み込みで復元す
   page,
 }) => {
   await page.goto("/");
-  await expectPreferences(page, "light", "off");
+  await expectPreferences(page, "light", "on");
   await choose(page, "テーマ", "ダーク");
-  await choose(page, "アニメーション", "オン");
-  await expectPreferences(page, "dark", "on");
+  await choose(page, "アニメーション", "オフ");
+  await expectPreferences(page, "dark", "off");
   expect(
     await page.evaluate(() => ({
       theme: localStorage.getItem("theme"),
       animation: localStorage.getItem("animation"),
     })),
-  ).toEqual({ theme: "dark", animation: "on" });
+  ).toEqual({ theme: "dark", animation: "off" });
   await page.reload();
-  await expectPreferences(page, "dark", "on");
+  await expectPreferences(page, "dark", "off");
   await choose(page, "テーマ", "ライト");
-  await choose(page, "アニメーション", "オフ");
+  await choose(page, "アニメーション", "オン");
   await page.reload();
-  await expectPreferences(page, "light", "off");
+  await expectPreferences(page, "light", "on");
 });
 
 test("不正な保存値を既定値へ戻す", async ({ page }) => {
@@ -200,7 +200,7 @@ test("不正な保存値を既定値へ戻す", async ({ page }) => {
     localStorage.setItem("animation", "invalid");
   });
   await page.goto("/");
-  await expectPreferences(page, "light", "off");
+  await expectPreferences(page, "light", "on");
 });
 
 test("ストレージを利用できなくても設定操作と本文を使える", async ({ page }) => {
@@ -212,13 +212,13 @@ test("ストレージを利用できなくても設定操作と本文を使え�
     });
   });
   await page.goto("/");
-  await expectPreferences(page, "light", "off");
+  await expectPreferences(page, "light", "on");
   await choose(page, "テーマ", "ダーク");
-  await choose(page, "アニメーション", "オン");
-  await expectPreferences(page, "dark", "on");
+  await choose(page, "アニメーション", "オフ");
+  await expectPreferences(page, "dark", "off");
   await expect(page.locator("main")).toBeVisible();
   await page.reload();
-  await expectPreferences(page, "light", "off");
+  await expectPreferences(page, "light", "on");
 });
 
 test("別タブの設定変更と削除を表示へ反映する", async ({ page, context }) => {
@@ -226,10 +226,10 @@ test("別タブの設定変更と削除を表示へ反映する", async ({ page,
   const other = await context.newPage();
   await other.goto("/");
   await choose(page, "テーマ", "ダーク");
-  await choose(page, "アニメーション", "オン");
-  await expectPreferences(other, "dark", "on");
+  await choose(page, "アニメーション", "オフ");
+  await expectPreferences(other, "dark", "off");
   await page.evaluate(() => localStorage.clear());
-  await expectPreferences(other, "light", "off");
+  await expectPreferences(other, "light", "on");
 });
 
 for (const id of ["section01", "section02", "section03", "section04"]) {

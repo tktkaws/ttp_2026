@@ -45,9 +45,12 @@ for (const width of [320, 768, 1280]) {
     await button.press("Enter");
     await expect(panel).toBeVisible();
     await expect(button).toHaveAttribute("aria-expanded", "true");
+    await expect.poll(async () => {
+      const rect = await panel.boundingBox();
+      return rect.x + rect.width;
+    }).toBeLessThanOrEqual(buttonRect.x);
     const panelRect = await panel.boundingBox();
     expect(panelRect.x).toBeGreaterThanOrEqual(0);
-    expect(panelRect.x + panelRect.width).toBeLessThanOrEqual(buttonRect.x);
     expect(panelRect.y + panelRect.height / 2).toBeCloseTo(450, 0);
     await testInfo.attach("contents-open", {
       body: await page.screenshot(),

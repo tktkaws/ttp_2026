@@ -139,13 +139,13 @@ html.dark [data-heading-reveal] {
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  html[data-animation="on"] [data-heading-reveal],
-  html[data-animation="on"] [data-logo-char] {
+  html[data-animation="on"][data-reveal-script] [data-heading-reveal],
+  html[data-animation="on"][data-reveal-script] [data-logo-char] {
     color: var(--color-gray-300);
   }
 
-  html[data-animation="on"] [data-heading-reveal]::after,
-  html[data-animation="on"] [data-logo-char]::after {
+  html[data-animation="on"][data-reveal-script] [data-heading-reveal]::after,
+  html[data-animation="on"][data-reveal-script] [data-logo-char]::after {
     content: attr(data-reveal-text);
     position: absolute;
     inset: 0;
@@ -153,8 +153,9 @@ html.dark [data-heading-reveal] {
     pointer-events: none;
   }
 
-  html[data-animation="on"] [data-heading-reveal]:not([data-revealed])::after,
-  html[data-animation="on"]
+  html[data-animation="on"][data-reveal-script]
+    [data-heading-reveal]:not([data-revealed])::after,
+  html[data-animation="on"][data-reveal-script]
     [data-logo-random-reveal]:not([data-revealed])
     [data-logo-char]::after {
     clip-path: inset(0 100% 0 0);

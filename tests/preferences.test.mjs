@@ -78,14 +78,14 @@ for (const options of [
 
 test("一方のキーだけ読めなくても、他方の保存値を復元する", (t) => {
   const dom = installDOM(t, {
-    saved: { theme: "dark", animation: "on" },
+    saved: { theme: "dark", animation: "off" },
     deniedKeys: ["animation"],
   });
   vm.runInNewContext(bootstrap[2], {
     document: dom.document,
     localStorage: dom.storage,
   });
-  assert.deepEqual(dom.root.dataset, { theme: "dark", animation: "off" });
+  assert.deepEqual(dom.root.dataset, { theme: "dark", animation: "on" });
   assert.deepEqual(readStoredPreferences(), dom.root.dataset);
 });
 
@@ -130,10 +130,10 @@ test("設定変更はDOMと保存値を同期し、再読み込みで復元す�
 test("保存失敗や保存しない更新でも、画面内の選択を利用できる", (t) => {
   const dom = installDOM(t, { deniedKeys: ["theme", "animation"] });
   setTheme("dark");
-  setAnimation("on");
+  setAnimation("off");
   const dispose = initPreferenceSync();
   dom.window.dispatchEvent(new Event("pageshow"));
-  assert.deepEqual(getPreferences(), { theme: "dark", animation: "on" });
+  assert.deepEqual(getPreferences(), { theme: "dark", animation: "off" });
   setTheme("light", false);
   assert.equal(getPreferences().theme, "light");
   assert.deepEqual(dom.writes, []);
@@ -192,11 +192,11 @@ test("設定ボタン・復元・別タブ変更で選択状態も同期する",
   assert.equal(theme.getAttribute("aria-pressed"), "true");
   assert.equal(dom.values.get("theme"), "dark");
   const dispose = initPreferenceSync();
-  dom.values.set("animation", "on");
+  dom.values.set("animation", "off");
   dom.window.dispatchEvent(
     eventWith("storage", { key: "animation", storageArea: dom.storage }),
   );
-  assert.equal(animation.getAttribute("aria-pressed"), "true");
+  assert.equal(animation.getAttribute("aria-pressed"), "false");
   dom.values.delete("theme");
   dom.window.dispatchEvent(new Event("pageshow"));
   assert.equal(theme.getAttribute("aria-pressed"), "false");

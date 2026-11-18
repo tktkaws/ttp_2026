@@ -1,6 +1,6 @@
 export const defaultPreferences = {
   theme: "light",
-  animation: "off",
+  animation: "on",
 };
 export const preferenceKeys = {
   theme: "theme",

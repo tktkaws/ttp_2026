@@ -1,3 +1,5 @@
+import { defaultPreferences } from "../../src/config/preferences.js";
+
 export class ElementStub extends EventTarget {
   isConnected = true;
   attributes = new Map();
@@ -87,7 +89,7 @@ export function createDOM({
   href = "http://localhost:4321/",
 } = {}) {
   const root = new ElementStub();
-  Object.assign(root.dataset, { theme: "light", animation: "off" });
+  Object.assign(root.dataset, defaultPreferences);
   const meta = new ElementStub();
   meta.setAttribute("content", "light");
   const targets = new Map();
