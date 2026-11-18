@@ -18,6 +18,56 @@ const fontFaces = faces.map(({ family, weight, url }) => `
   font-display: block;
   src: url("${url}") format("woff2");
 }`).join("\n");
+
+const githubIconPath = "M12 2C6.48 2 2 6.59 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.09.68-.22.68-.49 0-.24-.01-.88-.01-1.73-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.49-1.11-1.49-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.9 1.57 2.36 1.12 2.93.86.09-.67.35-1.12.63-1.38-2.22-.26-4.56-1.14-4.56-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05A9.38 9.38 0 0 1 12 7c.85 0 1.7.12 2.5.34 1.9-1.33 2.74-1.05 2.74-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.93-2.34 4.79-4.57 5.05.36.32.68.95.68 1.92 0 1.38-.01 2.5-.01 2.84 0 .27.18.59.69.49A10.08 10.08 0 0 0 22 12.25C22 6.59 17.52 2 12 2Z";
+const projectLinks = [
+  {
+    key: "site",
+    label: "サイトを見る",
+    icon: "M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0ZM2 12h20m-5 0c0 5.52-2.24 10-5 10s-5-4.48-5-10 2.24-10 5-10 5 4.48 5 10Z",
+  },
+  { key: "repository", label: "GitHubリポジトリを見る", icon: githubIconPath },
+  {
+    key: "article",
+    label: "解説記事を読む",
+    icon: "M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9Zm0 0v6h6M8 13h8m-8 4h8",
+  },
+] as const;
+
+const projects = [
+  {
+    title: "技術ブログ",
+    description: "microCMS、Astroを使用しブログを作成しました。",
+    image: { src: "/thinking-in-the-grey.png", width: 1920, height: 992 },
+    site: "https://thinking-in-the-grey.pages.dev/",
+    repository: "https://github.com/tktkaws/tech_blog_2026",
+    article: "https://thinking-in-the-grey.pages.dev/blog/ekgrhcgdn/",
+  },
+  {
+    title: "会議室予約システム",
+    description: "Next.jsとSupabaseを使用して会議室予約アプリを作成しました。",
+    image: { src: "/reservation-01.vercel.app_.png", width: 1920, height: 992 },
+    site: "https://reservation-01.vercel.app/",
+    repository: "https://github.com/tktkaws/reservation_01",
+    article: "https://thinking-in-the-grey.pages.dev/blog/rg3q2gwi4w/",
+  },
+  {
+    title: "SCROLL WARS",
+    description: "three.jsとLenisを使用し、STAR WARSのオープニングとエンディングをWebサイト上で再現しました。",
+    image: { src: "https://raw.githubusercontent.com/tktkaws/scroll_wars/main/public/screenshot.png", width: 1920, height: 992 },
+    site: "https://scroll-wars.vercel.app/",
+    repository: "https://github.com/tktkaws/scroll_wars",
+    article: "https://thinking-in-the-grey.pages.dev/blog/vnbejedunmy/",
+  },
+  {
+    title: "内閣府「国民の祝日」API",
+    description: "内閣府が公開している祝日・休日のCSVを使って、JSONを取得できるサイトを作成しました。",
+    image: { src: "/cao-holidays-json.png", width: 2081, height: 942 },
+    site: "https://cao-holidays-json.pages.dev/",
+    repository: "https://github.com/tktkaws/cao-holidays-json",
+    article: "https://thinking-in-the-grey.pages.dev/blog/7mdgg1cd1kyl/",
+  },
+];
 ---
 
 <!doctype html>
@@ -420,334 +470,76 @@ const fontFaces = faces.map(({ family, weight, url }) => `
                 role="list"
                 aria-label="成果物一覧"
               >
-                <li
-                  class="entry min-w-0"
-                  style="--item-color: #4F5A6B; --item-text: #fff"
-                >
-                  <article>
-                    <div
-                      class="object object--image [container-type:size] relative grid place-items-center aspect-[var(--mobile-card-ratio)] sm:aspect-[var(--wide-card-ratio)] p-0 overflow-hidden rounded-[5px] text-[var(--item-text)] bg-[var(--item-color)] origin-center dark:shadow-[inset_0_0_0_1px_rgb(255_255_255/0.12)]"
-                      data-card
-                    >
-                      <img
-                        class="absolute inset-[4%] w-[92%] h-[92%] max-w-none object-cover object-top pointer-events-none"
-                        src="/front-dispatch-2026.vercel.app_.png"
-                        alt=""
-                        width="1920"
-                        height="992"
-                        decoding="async"
-                      />
-                    </div>
-                    <h3 class="card-title details-title mt-[14px] max-w-full font-sans text-body font-medium leading-[1.8] tracking-normal text-left [overflow-wrap:anywhere]">
-                      技術ブログ
-                    </h3>
-                    <p class="link mt-1 font-sans text-[length:var(--details-font-size)] font-light leading-[1.8] [overflow-wrap:anywhere] text-pretty">
-                      <a
-                        class="text-inherit underline underline-offset-[0.15em] hover:decoration-2"
-                        href="https://thinking-in-the-grey.pages.dev/"
-                        target="_blank"
-                        rel="noreferrer"
-                        aria-label="https://thinking-in-the-grey.pages.dev/（別ウィンドウで開きます）"
+                {projects.map((project) => (
+                  <li
+                    class="entry min-w-0"
+                    style="--item-color: #4F5A6B; --item-text: #fff"
+                  >
+                    <article>
+                      <div
+                        class="object object--image [container-type:size] relative grid place-items-center aspect-[var(--mobile-card-ratio)] sm:aspect-[var(--wide-card-ratio)] p-0 overflow-hidden rounded-[5px] text-[var(--item-text)] bg-[var(--item-color)] origin-center dark:shadow-[inset_0_0_0_1px_rgb(255_255_255/0.12)]"
+                        data-card
                       >
-                        https://thinking-in-the-grey.pages.dev/
-                        <svg
-                          class="external-link-icon inline-block w-[0.85em] h-[0.85em] ms-[0.3em] align-[-0.05em]"
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          width="16"
-                          height="16"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          aria-hidden="true"
-                          focusable="false"
-                        >
-                          <path d="M14 3h7v7M21 3 10 14"></path>
-                          <path d="M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5"></path>
-                        </svg>
-                      </a>
-                    </p>
-                    <p class="description mt-[14px] font-sans text-[length:var(--details-font-size)] font-light leading-[1.8] [overflow-wrap:anywhere] text-pretty">
-                      microCMS、Astroを使用しブログを作成しました。
-                    </p>
-                    <p class="link details-link relative z-2 mt-[14px] font-sans text-[length:var(--details-font-size)] font-light leading-[1.8] [overflow-wrap:anywhere] text-pretty">
-                      <a
-                        class="text-inherit underline underline-offset-[0.15em] hover:decoration-2"
-                        href="https://thinking-in-the-grey.pages.dev/blog/ekgrhcgdn/"
-                        target="_blank"
-                        rel="noreferrer"
-                        aria-label="技術ブログの詳しい説明を見る（別ウィンドウで開きます）"
-                      >
-                        詳しい説明を見る
-                        <svg
-                          class="external-link-icon inline-block w-[0.85em] h-[0.85em] ms-[0.3em] align-[-0.05em]"
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          width="16"
-                          height="16"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          aria-hidden="true"
-                          focusable="false"
-                        >
-                          <path d="M14 3h7v7M21 3 10 14"></path>
-                          <path d="M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5"></path>
-                        </svg>
-                      </a>
-                    </p>
-                  </article>
-                </li>
-                <li
-                  class="entry min-w-0"
-                  style="--item-color: #4F5A6B; --item-text: #fff"
-                >
-                  <article>
-                    <div
-                      class="object object--image [container-type:size] relative grid place-items-center aspect-[var(--mobile-card-ratio)] sm:aspect-[var(--wide-card-ratio)] p-0 overflow-hidden rounded-[5px] text-[var(--item-text)] bg-[var(--item-color)] origin-center dark:shadow-[inset_0_0_0_1px_rgb(255_255_255/0.12)]"
-                      data-card
-                    >
-                      <img
-                        class="absolute inset-[4%] w-[92%] h-[92%] max-w-none object-cover object-top pointer-events-none"
-                        src="/reservation-01.vercel.app_.png"
-                        alt=""
-                        width="1920"
-                        height="992"
-                        decoding="async"
-                      />
-                    </div>
-                    <h3 class="card-title details-title mt-[14px] max-w-full font-sans text-body font-medium leading-[1.8] tracking-normal text-left [overflow-wrap:anywhere]">
-                      会議室予約システム
-                    </h3>
-                    <p class="link mt-1 font-sans text-[length:var(--details-font-size)] font-light leading-[1.8] [overflow-wrap:anywhere] text-pretty">
-                      <a
-                        class="text-inherit underline underline-offset-[0.15em] hover:decoration-2"
-                        href="https://reservation-01.vercel.app/"
-                        target="_blank"
-                        rel="noreferrer"
-                        aria-label="https://reservation-01.vercel.app/（別ウィンドウで開きます）"
-                      >
-                        https://reservation-01.vercel.app/
-                        <svg
-                          class="external-link-icon inline-block w-[0.85em] h-[0.85em] ms-[0.3em] align-[-0.05em]"
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          width="16"
-                          height="16"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          aria-hidden="true"
-                          focusable="false"
-                        >
-                          <path d="M14 3h7v7M21 3 10 14"></path>
-                          <path d="M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5"></path>
-                        </svg>
-                      </a>
-                    </p>
-                    <p class="description mt-[14px] font-sans text-[length:var(--details-font-size)] font-light leading-[1.8] [overflow-wrap:anywhere] text-pretty">
-                      Next.jsとSupabaseを使用して会議室予約アプリを作成しました。
-                    </p>
-                    <p class="link details-link relative z-2 mt-[14px] font-sans text-[length:var(--details-font-size)] font-light leading-[1.8] [overflow-wrap:anywhere] text-pretty">
-                      <a
-                        class="text-inherit underline underline-offset-[0.15em] hover:decoration-2"
-                        href="https://thinking-in-the-grey.pages.dev/blog/rg3q2gwi4w/"
-                        target="_blank"
-                        rel="noreferrer"
-                        aria-label="会議室予約システムの詳しい説明を見る（別ウィンドウで開きます）"
-                      >
-                        詳しい説明を見る
-                        <svg
-                          class="external-link-icon inline-block w-[0.85em] h-[0.85em] ms-[0.3em] align-[-0.05em]"
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          width="16"
-                          height="16"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          aria-hidden="true"
-                          focusable="false"
-                        >
-                          <path d="M14 3h7v7M21 3 10 14"></path>
-                          <path d="M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5"></path>
-                        </svg>
-                      </a>
-                    </p>
-                  </article>
-                </li>
-                <li
-                  class="entry min-w-0"
-                  style="--item-color: #4F5A6B; --item-text: #fff"
-                >
-                  <article>
-                    <div
-                      class="object object--image [container-type:size] relative grid place-items-center aspect-[var(--mobile-card-ratio)] sm:aspect-[var(--wide-card-ratio)] p-0 overflow-hidden rounded-[5px] text-[var(--item-text)] bg-[var(--item-color)] origin-center dark:shadow-[inset_0_0_0_1px_rgb(255_255_255/0.12)]"
-                      data-card
-                    >
-                      <img
-                        class="absolute inset-[4%] w-[92%] h-[92%] max-w-none object-cover object-top pointer-events-none"
-                        src="https://raw.githubusercontent.com/tktkaws/scroll_wars/main/public/screenshot.png"
-                        alt=""
-                        width="1920"
-                        height="992"
-                        decoding="async"
-                      />
-                    </div>
-                    <h3 class="card-title details-title mt-[14px] max-w-full font-sans text-body font-medium leading-[1.8] tracking-normal text-left [overflow-wrap:anywhere]">
-                      SCROLL WARS
-                    </h3>
-                    <p class="link mt-1 font-sans text-[length:var(--details-font-size)] font-light leading-[1.8] [overflow-wrap:anywhere] text-pretty">
-                      <a
-                        class="text-inherit underline underline-offset-[0.15em] hover:decoration-2"
-                        href="https://scroll-wars.vercel.app/"
-                        target="_blank"
-                        rel="noreferrer"
-                        aria-label="https://scroll-wars.vercel.app/（別ウィンドウで開きます）"
-                      >
-                        https://scroll-wars.vercel.app/
-                        <svg
-                          class="external-link-icon inline-block w-[0.85em] h-[0.85em] ms-[0.3em] align-[-0.05em]"
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          width="16"
-                          height="16"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          aria-hidden="true"
-                          focusable="false"
-                        >
-                          <path d="M14 3h7v7M21 3 10 14"></path>
-                          <path d="M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5"></path>
-                        </svg>
-                      </a>
-                    </p>
-                    <p class="description mt-[14px] font-sans text-[length:var(--details-font-size)] font-light leading-[1.8] [overflow-wrap:anywhere] text-pretty">
-                      three.jsとLenisを使用し、スター・ウォーズのオープニングとエンディングをWebサイト上で再現しました。
-                    </p>
-                    <p class="link details-link relative z-2 mt-[14px] font-sans text-[length:var(--details-font-size)] font-light leading-[1.8] [overflow-wrap:anywhere] text-pretty">
-                      <a
-                        class="text-inherit underline underline-offset-[0.15em] hover:decoration-2"
-                        href="https://thinking-in-the-grey.pages.dev/blog/vnbejedunmy/"
-                        target="_blank"
-                        rel="noreferrer"
-                        aria-label="SCROLL WARSの詳しい説明を見る（別ウィンドウで開きます）"
-                      >
-                        詳しい説明を見る
-                        <svg
-                          class="external-link-icon inline-block w-[0.85em] h-[0.85em] ms-[0.3em] align-[-0.05em]"
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          width="16"
-                          height="16"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          aria-hidden="true"
-                          focusable="false"
-                        >
-                          <path d="M14 3h7v7M21 3 10 14"></path>
-                          <path d="M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5"></path>
-                        </svg>
-                      </a>
-                    </p>
-                  </article>
-                </li>
-                <li
-                  class="entry min-w-0"
-                  style="--item-color: #4F5A6B; --item-text: #fff"
-                >
-                  <article>
-                    <div
-                      class="object object--image [container-type:size] relative grid place-items-center aspect-[var(--mobile-card-ratio)] sm:aspect-[var(--wide-card-ratio)] p-0 overflow-hidden rounded-[5px] text-[var(--item-text)] bg-[var(--item-color)] origin-center dark:shadow-[inset_0_0_0_1px_rgb(255_255_255/0.12)]"
-                      data-card
-                    >
-                      <img
-                        class="absolute inset-[4%] w-[92%] h-[92%] max-w-none object-cover object-top pointer-events-none"
-                        src="/cao-holidays-json.png"
-                        alt=""
-                        width="2081"
-                        height="942"
-                        decoding="async"
-                      />
-                    </div>
-                    <h3 class="card-title details-title mt-[14px] max-w-full font-sans text-body font-medium leading-[1.8] tracking-normal text-left [overflow-wrap:anywhere]">
-                      内閣府「国民の祝日」API
-                    </h3>
-                    <p class="link mt-1 font-sans text-[length:var(--details-font-size)] font-light leading-[1.8] [overflow-wrap:anywhere] text-pretty">
-                      <a
-                        class="text-inherit underline underline-offset-[0.15em] hover:decoration-2"
-                        href="https://cao-holidays-json.pages.dev/"
-                        target="_blank"
-                        rel="noreferrer"
-                        aria-label="https://cao-holidays-json.pages.dev/（別ウィンドウで開きます）"
-                      >
-                        https://cao-holidays-json.pages.dev/
-                        <svg
-                          class="external-link-icon inline-block w-[0.85em] h-[0.85em] ms-[0.3em] align-[-0.05em]"
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          width="16"
-                          height="16"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          aria-hidden="true"
-                          focusable="false"
-                        >
-                          <path d="M14 3h7v7M21 3 10 14"></path>
-                          <path d="M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5"></path>
-                        </svg>
-                      </a>
-                    </p>
-                    <p class="description mt-[14px] font-sans text-[length:var(--details-font-size)] font-light leading-[1.8] [overflow-wrap:anywhere] text-pretty">
-                      内閣府が公開している祝日・休日のCSVを使って、JSONを取得できるサイトを作成しました。
-                    </p>
-                    <p class="link details-link relative z-2 mt-[14px] font-sans text-[length:var(--details-font-size)] font-light leading-[1.8] [overflow-wrap:anywhere] text-pretty">
-                      <a
-                        class="text-inherit underline underline-offset-[0.15em] hover:decoration-2"
-                        href="https://thinking-in-the-grey.pages.dev/blog/7mdgg1cd1kyl/"
-                        target="_blank"
-                        rel="noreferrer"
-                        aria-label="Spotify UIの詳しい説明を見る（別ウィンドウで開きます）"
-                      >
-                        詳しい説明を見る
-                        <svg
-                          class="external-link-icon inline-block w-[0.85em] h-[0.85em] ms-[0.3em] align-[-0.05em]"
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          width="16"
-                          height="16"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          aria-hidden="true"
-                          focusable="false"
-                        >
-                          <path d="M14 3h7v7M21 3 10 14"></path>
-                          <path d="M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5"></path>
-                        </svg>
-                      </a>
-                    </p>
-                  </article>
-                </li>
+                        <img
+                          class="absolute inset-[4%] w-[92%] h-[92%] max-w-none object-cover object-top pointer-events-none"
+                          {...project.image}
+                          alt=""
+                          decoding="async"
+                        />
+                      </div>
+                      <h3 class="card-title details-title mt-[14px] max-w-full font-sans text-body font-medium leading-[1.8] tracking-normal text-left [overflow-wrap:anywhere]">
+                        {project.title}
+                      </h3>
+                      <p class="description mt-1 font-sans text-[length:var(--details-font-size)] font-light leading-[1.8] [overflow-wrap:anywhere] text-pretty">
+                        {project.description}
+                      </p>
+                      <ul class="link relative z-2 mt-[14px] space-y-1 font-sans text-[length:var(--details-font-size)] font-light leading-[1.8]" role="list">
+                        {projectLinks.map(({ key, label, icon }) => (
+                          <li>
+                            <a
+                              class="inline-flex max-w-full items-start gap-[0.45em] text-inherit underline underline-offset-[0.15em] hover:decoration-2"
+                              href={project[key]}
+                              target="_blank"
+                              rel="noreferrer"
+                              aria-label={project.title + "の" + label + "（別ウィンドウで開きます）"}
+                            >
+                              <svg
+                                class="mt-[0.4em] size-[1em] shrink-0"
+                                viewBox="0 0 24 24"
+                                fill={key === "repository" ? "currentColor" : "none"}
+                                stroke={key === "repository" ? "none" : "currentColor"}
+                                stroke-width="1.5"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                aria-hidden="true"
+                                focusable="false"
+                              >
+                                <path d={icon} />
+                              </svg>
+                              <span class="min-w-0 [overflow-wrap:anywhere]">
+                                {label}
+                                <svg
+                                  class="inline-block size-[0.85em] ms-[0.2em] align-[-0.05em]"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  stroke-width="1.5"
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  aria-hidden="true"
+                                  focusable="false"
+                                >
+                                  <path d="M14 3h7v7M21 3 10 14" />
+                                  <path d="M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5" />
+                                </svg>
+                              </span>
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </article>
+                  </li>
+                ))}
               </ul>
               <svg
                 class="skin hidden absolute inset-0 w-full h-full overflow-visible pointer-events-none"
@@ -806,7 +598,7 @@ const fontFaces = faces.map(({ family, weight, url }) => `
             viewBox="0 0 24 24"
             class="size-6 fill-current"
           >
-            <path d="M12 2C6.48 2 2 6.59 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.09.68-.22.68-.49 0-.24-.01-.88-.01-1.73-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.49-1.11-1.49-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.9 1.57 2.36 1.12 2.93.86.09-.67.35-1.12.63-1.38-2.22-.26-4.56-1.14-4.56-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05A9.38 9.38 0 0 1 12 7c.85 0 1.7.12 2.5.34 1.9-1.33 2.74-1.05 2.74-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.93-2.34 4.79-4.57 5.05.36.32.68.95.68 1.92 0 1.38-.01 2.5-.01 2.84 0 .27.18.59.69.49A10.08 10.08 0 0 0 22 12.25C22 6.59 17.52 2 12 2Z"></path>
+            <path d={githubIconPath} />
           </svg>
         </a>
       </div>
