@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-const fontPattern = "**/fonts/*.woff2";
+const fontPattern = "**/*.woff2";
 
 test.beforeEach(async ({ context, baseURL }) => {
   const origin = new URL(baseURL).origin;
